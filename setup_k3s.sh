@@ -48,7 +48,7 @@ while true; do
 		printf '\n** Kubernetes installed, everything else is optional**\n'
 
 		gum confirm "Disable master's local firewall?" &&
-			ssh "$MASTER_SSH_USER"@"$MASTER_IP" -i "$SSH_KEY" "sudo systemctl stop firewalld && sudo systemctl disable firewalld"
+			gum spin ssh "$MASTER_SSH_USER"@"$MASTER_IP" -i "$SSH_KEY" "sudo systemctl stop firewalld && sudo systemctl disable firewalld"
 		check_exit
 
 		test -f "$(pwd)/kubeconfig"
