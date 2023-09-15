@@ -1,3 +1,12 @@
+#### Usage
+
+Script assumes the following:
+
+1. User is running a Bash shell.
+2. User is installing to a Oracle instance
+
+#### DevLog
+
 ##### 230906
 
 The goal of this project is to automatically push a container to a self-made Kubernetes cluster.
