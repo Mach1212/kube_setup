@@ -13,8 +13,8 @@ else
 	gum confirm "Ok to install k3sup?" || exit
 	echo 'Downloading k3sup'
 
-	sudo curl -sLS https://get.k3sup.devasdfjsadkf | sudo sh
-	if ! $?; then
+	sudo curl -sLS https://get.k3sup.dev | sudo sh
+	if [ $? -ne 0 ]; then
 		printf "\nSomething unexpected occured during k3sup install...\n"
 		exit
 	fi
