@@ -1,5 +1,10 @@
 #!/usr/bin/sh
 
+trap '
+  trap - INT # restore default INT handler
+  kill -s INT "$$"
+' INT
+
 K3SUPS_EXE_PATH='/usr/local/bin/k3sup'
 
 if [ -f "$K3SUPS_EXE_PATH" ]; then
@@ -10,15 +15,21 @@ else
 	sudo curl -sLS https://get.k3sup.dev | sudo sh
 fi
 
+check_exit() {
+	if [ $? = 130 ]; then
+		exit
+	fi
+}
+
 while true; do
 	NODE_TYPE=$(gum choose --header "Setup node" --limit 1 "master" "worker") || exit
 
-	MASTER_IP=$(gum input --header 'Master IP' --value "$MASTER_IP")
-	MASTER_SSH_USER=$(gum input --header 'SSH User' --value "$MASTER_SSH_USER")
+	MASTER_IP=$(gum input --header 'Master IP' --value "$MASTER_IP") || exit
+	MASTER_SSH_USER=$(gum input --header 'SSH User' --value "$MASTER_SSH_USER") || exit
 	if [ -z "$SSH_KEY_VALUE" ]; then
 		SSH_KEY_VALUE='~/.ssh/id_rsa'
 	fi
-	SSH_KEY=$(gum input --header 'Private SSH Key' --value "$SSH_KEY_VALUE")
+	SSH_KEY=$(gum input --header 'Private SSH Key' --value "$SSH_KEY_VALUE") || exit
 
 	if [ "$NODE_TYPE" = "master" ]; then
 		echo "Installing master..."
@@ -29,25 +40,29 @@ while true; do
 			--ssh-key "$SSH_KEY" \
 			--sudo
 
-		gum confirm "Disable master firewall?" && 
-			ssh "$MASTER_SSH_USER"@"$MASTER_IP" -i "$SSH_KEY" "sudo systemctl stop firewalld && sudo systemctl disable firewalld"
+		printf '\n** Kubernetes installed, everything else is optional**\n'
 
-		if [ -f "$(pwd)/kubeconfig" ]; then
-			gum confirm "Set KUBECONFIG in .bashrc?" &&
-				echo "export KUBECONFIG=\"$(pwd)/kubeconfig\"" >>~/.bashrc
-			gum confirm "Alias kc to kubectl in .bashrc?" &&
-				echo "alias kc=kubectl" >>~/.bashrc &&
-				alias kc=kubectl
-			export KUBECONFIG
-			KUBECONFIG="$(pwd)/kubeconfig"
-		else
+		gum confirm "Disable master's local firewall?" &&
+			ssh "$MASTER_SSH_USER"@"$MASTER_IP" -i "$SSH_KEY" "sudo systemctl stop firewalld && sudo systemctl disable firewalld"
+		check_exit
+
+		test -f "$(pwd)/kubeconfig"
+		if [ $? = 1 ]; then
 			echo "Kubeconfig not in default directory. Unable to set environment."
 		fi
 
-		echo ""
-		echo "Ensure firewall is disabled!"
-		echo "Ensure port 6443 is open!"
-		echo "Test cluster via \"kubectl get nodes\""
+		gum confirm "Set KUBECONFIG in .bashrc?" &&
+			echo "export KUBECONFIG=\"$(pwd)/kubeconfig\"" >>~/.bashrc
+		check_exit
+		gum confirm "Alias kc to kubectl in .bashrc?" &&
+			echo "alias kc=kubectl" >>~/.bashrc &&
+			alias kc=kubectl
+		check_exit
+		export KUBECONFIG
+		KUBECONFIG="$(pwd)/kubeconfig"
+
+		printf "\nEnsure port 6443 is open, locally and in cloud!\n"
+		printf "Test cluster via \"kubectl get nodes\"\n"
 	else
 		echo "Joining worker..."
 		k3sup join \
