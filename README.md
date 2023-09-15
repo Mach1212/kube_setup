@@ -5,6 +5,10 @@ Script assumes the following:
 1. User is running a Bash shell.
 2. User is installing to a Oracle instance
 
+#### Todo
+
+1. Change .bashrc additions to ensure vars aren't already set
+
 #### DevLog
 
 ##### 230906
