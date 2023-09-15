@@ -29,6 +29,9 @@ while true; do
 			--ssh-key "$SSH_KEY" \
 			--sudo
 
+		gum confirm "Disable master firewall?" && 
+			ssh "$MASTER_SSH_USER"@"$MASTER_IP" -i "$SSH_KEY" "sudo systemctl stop firewalld && sudo systemctl disable firewalld"
+
 		if [ -f "$(pwd)/kubeconfig" ]; then
 			gum confirm "Set KUBECONFIG in .bashrc?" &&
 				echo "export KUBECONFIG=\"$(pwd)/kubeconfig\"" >>~/.bashrc
