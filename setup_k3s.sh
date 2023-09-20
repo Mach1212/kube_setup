@@ -1,10 +1,5 @@
 #!/usr/bin/bash
 
-trap '
-  trap - INT # restore default INT handler
-  kill -s INT "$$"
-' INT
-
 K3SUPS_EXE_PATH='/usr/local/bin/k3sup'
 
 if [ -f "$K3SUPS_EXE_PATH" ]; then
