@@ -1,16 +1,19 @@
 #!/usr/bin/bash
 
-handle_error() {
-	EXIT_STATUS=$?
-	if [ $EXIT_STATUS != 0 ]; then
-		echo $1: $EXIT_STATUS
-		exit
-	fi
-}
 handle_termination() {
-	if [ $? = 130 ]; then
+	local STATUS="$?"
+	if [ $STATUS = 130 ]; then
 		exit
 	fi
+	return $STATUS
+}
+handle_error() {
+	local STATUS="$?"
+	if [ $STATUS != 0 ]; then
+		echo "$1: $STATUS"
+		exit
+	fi
+	return $STATUS
 }
 final() {
 	gum confirm "Setup bash-completions?" && [[ $PS1 && -f /usr/share/bash-completion/bash_completion ]] &&
@@ -18,11 +21,12 @@ final() {
 	exit
 }
 main() {
-	gum filter <<<"random" &>/dev/null
-	handle_error "Download Charmbracelet Gum"
+	if command -v gum; then
+		echo "Download Charmbracelet Gum"
+		exit
+	fi
 
-	k3sup
-	if [ $? = 127 ]; then
+	if ! command -v k3sup; then
 		echo 'Downloading k3sup'
 
 		if ! sudo curl -sLS https://get.k3sup.dev | sudo sh; then
