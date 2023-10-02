@@ -22,6 +22,9 @@ final() {
 }
 main() {
 	if command -v gum; then
+		
+		read -p "Press [Enter] to continue installing gum. If not please ctrl+c.
+		
 		echo "Downloading Charmbracelet Gum"
 		
 		if ! sudo mkdir -p /etc/apt/keyrings

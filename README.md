@@ -1,3 +1,9 @@
+#### Install
+Note: Use Oracle Linux 9. Also Oracle Cloud Server Instance Is Required (cloud.oracle.com)
+Here is a step by step on how to install ks3up
+First clone the repo. git clone https://github.com/Mach1212/kube_setup
+Now run the script. cd kube_setup, ./setup_ks3.sh
+
 #### Usage
 
 Script assumes the following:
@@ -7,7 +13,7 @@ Script assumes the following:
 
 #### Todo
 
-1. Change .bashrc additions to ensure vars aren't already set
+1. [] Change .bashrc additions to ensure vars aren't already set
 
 #### DevLog
 
