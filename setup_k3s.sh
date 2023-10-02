@@ -28,7 +28,7 @@ main() {
 		curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
 		echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/charm.list
 		sudo apt update && sudo apt install gum
-		echo "Charmbracelet Gum Installed, Please restart setup."
+		echo "Charmbracelet Gum Installed, Please Restart Setup Script."
 		exit
 	fi
 
