@@ -22,7 +22,13 @@ final() {
 }
 main() {
 	if command -v gum; then
-		echo "Download Charmbracelet Gum"
+		echo "Downloading Charmbracelet Gum"
+		
+		if ! sudo mkdir -p /etc/apt/keyrings
+		curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
+		echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/charm.list
+		sudo apt update && sudo apt install gum
+		echo "Charmbracelet Gum Installed, Please restart setup."
 		exit
 	fi
 
@@ -30,7 +36,7 @@ main() {
 		echo 'Downloading k3sup'
 
 		if ! sudo curl -sLS https://get.k3sup.dev | sudo sh; then
-			printf "\nSomething unexpected occured during k3sup install...\n"
+			printf "\nSomething unexpected occured during k3sup install... Try Restarting, Or making a issue on github.\n"
 			exit
 		fi
 	fi
