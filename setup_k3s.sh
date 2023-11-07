@@ -21,7 +21,7 @@ final() {
 	exit
 }
 main() {
-	if command -v gum; then
+	if ! command -v gum; then
 		echo "Download Charmbracelet Gum"
 		exit
 	fi
